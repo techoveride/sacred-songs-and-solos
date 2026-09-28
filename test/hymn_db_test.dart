@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hymn_book/model/db_helper.dart';
 import 'package:hymn_book/model/hymn.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 void main() {
@@ -83,7 +82,6 @@ void main() {
 
   group('DatabaseHelper Unified Storage Tests', () {
     late Database testDb;
-    late DatabaseHelper dbHelper;
 
     setUp(() async {
       // Use an in-memory SQLite database for clean, isolated tests
@@ -110,8 +108,7 @@ void main() {
         ),
       );
 
-      dbHelper = DatabaseHelper();
-      // Inject the test database into dbHelper
+      // Initialize DatabaseHelper singleton
       DatabaseHelper.internal();
     });
 

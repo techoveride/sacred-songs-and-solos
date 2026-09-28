@@ -33,7 +33,8 @@ class _AnchoredAdaptiveAdState extends State<AnchoredAdaptiveAd> {
 
   /// Load another ad, disposing of the current ad if there is one.
   Future<void> _loadAd() async {
-    if (PurchaseNotifier.instance.isPro) {
+    final isMobile = !kIsWeb && (Platform.isAndroid || Platform.isIOS);
+    if (!isMobile || PurchaseNotifier.instance.isPro) {
       await _anchoredAdaptiveAd?.dispose();
       if (mounted) {
         setState(() {
@@ -117,6 +118,11 @@ class _AnchoredAdaptiveAdState extends State<AnchoredAdaptiveAd> {
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = !kIsWeb && (Platform.isAndroid || Platform.isIOS);
+    if (!isMobile) {
+      return const SizedBox.shrink();
+    }
+
     return ListenableBuilder(
       listenable: PurchaseNotifier.instance,
       builder: (context, _) {

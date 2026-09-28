@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import '../state/purchase_notifier.dart';
 
 class AppOpenAdManager {
   AppOpenAd? _appOpenAd;
@@ -14,6 +17,10 @@ class AppOpenAdManager {
 
   /// Load an AppOpenAd.
   void loadAd() {
+    final isMobile = !kIsWeb && (Platform.isAndroid || Platform.isIOS);
+    if (!isMobile || PurchaseNotifier.instance.isPro) {
+      return;
+    }
     AppOpenAd.load(
       adUnitId: "ca-app-pub-2165165254805026/6522356999",
       // adUnitId: "ca-app-pub-3940256099942544/3419835294",
@@ -41,6 +48,10 @@ class AppOpenAdManager {
   }
 
   void showAdIfAvailable() {
+    final isMobile = !kIsWeb && (Platform.isAndroid || Platform.isIOS);
+    if (!isMobile || PurchaseNotifier.instance.isPro) {
+      return;
+    }
     if (kDebugMode) {
       print(
           "Called=====================================================================");

@@ -8,6 +8,7 @@ import 'package:hymn_book/model/hymn_composer.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 class DatabaseHelper {
   static const String dbName = "Hymn_Lyrics.db";
@@ -46,6 +47,11 @@ class DatabaseHelper {
   }
 
   Future<Database> initDB() async {
+    if (!kIsWeb && (Platform.isWindows || Platform.isLinux)) {
+      sqfliteFfiInit();
+      databaseFactory = databaseFactoryFfi;
+    }
+
     String documentsDirectory = await getDatabasesPath();
     String path = join(documentsDirectory, dbName);
 
