@@ -8,7 +8,7 @@
 PRODUCT_NAME = sacred_songs_and_solos
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.hymnestry.sacred_songs_and_solos
+PRODUCT_BUNDLE_IDENTIFIER = com.hymnestry.sacredSongsAndSolos
 
 // The copyright displayed in application information
 PRODUCT_COPYRIGHT = Copyright © 2026 com.hymnestry. All rights reserved.

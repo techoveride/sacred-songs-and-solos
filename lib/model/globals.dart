@@ -39,11 +39,11 @@ String app_version = "";
 String more_apps = 'https://hymnestry.techoveride.com/';
 String share_app = 'https://hymnestry.techoveride.com/';
 String APP_STORE_URL =
-    'https://phobos.apple.com/WebObjects/MZStore.woa/wa/viewSoftwareUpdate?id=com.hymnestry.sacred_songs_and_solos&mt=8';
+    'https://phobos.apple.com/WebObjects/MZStore.woa/wa/viewSoftwareUpdate?id=com.hymnestry.sacredSongsAndSolos&mt=8';
 String PLAY_STORE_URL =
     'https://play.google.com/store/apps/details?id=com.hymnestry.sacred_songs_and_solos';
 String PREMIUM_APP_STORE_URL =
-    'https://phobos.apple.com/WebObjects/MZStore.woa/wa/viewSoftwareUpdate?id=com.hymnestry.sacred_songs_and_solos_pro&mt=8';
+    'https://phobos.apple.com/WebObjects/MZStore.woa/wa/viewSoftwareUpdate?id=com.hymnestry.sacredSongsAndSolosPro&mt=8';
 String PREMIUM_PLAY_STORE_URL =
     'https://play.google.com/store/apps/details?id=com.hymnestry.sacred_songs_and_solos';
 

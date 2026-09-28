@@ -66,7 +66,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '230343352269',
     projectId: 'hymn-book-690dd',
     storageBucket: 'hymn-book-690dd.firebasestorage.app',
-    iosBundleId: 'com.hymnestry.sacred_songs_and_solos',
+    iosBundleId: 'com.hymnestry.sacredSongsAndSolos',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
@@ -75,6 +75,6 @@ class DefaultFirebaseOptions {
     messagingSenderId: '230343352269',
     projectId: 'hymn-book-690dd',
     storageBucket: 'hymn-book-690dd.firebasestorage.app',
-    iosBundleId: 'com.hymnestry.sacred_songs_and_solos',
+    iosBundleId: 'com.hymnestry.sacredSongsAndSolos',
   );
 }
