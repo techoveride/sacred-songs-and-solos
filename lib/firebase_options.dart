@@ -61,8 +61,8 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCHxmWSFUbVnWG5YjSpAI0MeLDdgePFWKU',
-    appId: '1:230343352269:ios:5fa826619b60063576ee84',
+    apiKey: 'AIzaSyBNMau-L7lMtuhrU_AwIwbgA8ZNeMsRxwo',
+    appId: '1:230343352269:ios:6921c8c17171d4a076ee84',
     messagingSenderId: '230343352269',
     projectId: 'hymn-book-690dd',
     storageBucket: 'hymn-book-690dd.firebasestorage.app',
@@ -70,8 +70,8 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyCHxmWSFUbVnWG5YjSpAI0MeLDdgePFWKU',
-    appId: '1:230343352269:ios:5fa826619b60063576ee84',
+    apiKey: 'AIzaSyBNMau-L7lMtuhrU_AwIwbgA8ZNeMsRxwo',
+    appId: '1:230343352269:ios:6921c8c17171d4a076ee84',
     messagingSenderId: '230343352269',
     projectId: 'hymn-book-690dd',
     storageBucket: 'hymn-book-690dd.firebasestorage.app',
