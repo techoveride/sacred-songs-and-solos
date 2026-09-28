@@ -18,6 +18,8 @@ import 'compose_song.dart';
 import 'help_me.dart';
 import 'hymn_listing.dart';
 import '../state/hymns_notifier.dart';
+import '../state/purchase_notifier.dart';
+import 'pro_upgrade_dialog.dart';
 
 class MyDrawer extends StatefulWidget {
   final bool? isTabletLayout;
@@ -87,21 +89,33 @@ class _MyDrawerState extends State<MyDrawer> {
               "hymnestryteam@outlook.com",
             ),
           ),
-          ListTile(
-              leading: ConstrainedBox(
-                constraints: BoxConstraints.tight(const Size.square(34.0)),
-                child: Image.asset(
-                  'images/premium.png',
-                  color: globals.nightMode ? Colors.white : Colors.black54,
+          ListenableBuilder(
+            listenable: PurchaseNotifier.instance,
+            builder: (context, _) {
+              final isPro = PurchaseNotifier.instance.isPro;
+              return ListTile(
+                leading: Icon(
+                  isPro ? Icons.verified : Icons.workspace_premium,
+                  color: Colors.amber[700],
+                  size: 28,
                 ),
-              ),
-              title: const Text(
-                "Premium Upgrade(No Ads)",
-              ),
-              onTap: () async {
-                await loadRemoteConfig();
-                premiumAppUpdate();
-              }),
+                title: Text(
+                  isPro ? "Pro Member Active" : "Upgrade to Pro (No Ads)",
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Text(
+                  isPro
+                      ? "Lifetime ad-free access"
+                      : "Remove ads • ${PurchaseNotifier.instance.formattedPrice}",
+                  style: const TextStyle(fontSize: 12),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  showProUpgradeDialog(context);
+                },
+              );
+            },
+          ),
           ListTile(
             leading: const Icon(Icons.border_color),
             title: const Text(

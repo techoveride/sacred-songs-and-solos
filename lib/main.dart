@@ -13,6 +13,7 @@ import 'firebase_options.dart';
 import 'model/db_helper.dart';
 import 'service/hymn_sync_service.dart';
 import 'state/hymns_notifier.dart';
+import 'state/purchase_notifier.dart';
 import 'state/reading_settings_notifier.dart';
 
 // local variables
@@ -72,6 +73,9 @@ void main() async {
 
   // Load hymn Details reading preferences via ReadingSettingsNotifier
   await ReadingSettingsNotifier.instance.init(preferences);
+
+  // Initialize In-App Purchases & Pro status
+  await PurchaseNotifier.instance.init();
 
   // Listen for legacy nightMode stream events from drawer
   isLightTheme.stream.listen((isDark) {

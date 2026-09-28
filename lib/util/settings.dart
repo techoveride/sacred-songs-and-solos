@@ -3,8 +3,10 @@ import 'package:hymn_book/model/globals.dart' as globals;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
+import '../state/purchase_notifier.dart';
 import '../state/reading_settings_notifier.dart';
 import 'app_dialog.dart';
+import 'pro_upgrade_dialog.dart';
 
 class Settings extends StatefulWidget {
   const Settings({super.key});
@@ -801,6 +803,34 @@ class _SettingsState extends State<Settings> {
                 style: TextStyle(fontWeight: FontWeight.w600)),
             subtitle: const Text(
                 "Prevent screen from turning off while reading hymns"),
+          ),
+          const Divider(
+            thickness: 2.0,
+          ),
+          ListenableBuilder(
+            listenable: PurchaseNotifier.instance,
+            builder: (context, _) {
+              final isPro = PurchaseNotifier.instance.isPro;
+              return ListTile(
+                leading: Icon(
+                  isPro ? Icons.verified : Icons.workspace_premium,
+                  color: Colors.amber[700],
+                ),
+                title: Text(
+                  isPro ? "Pro Version Active" : "Upgrade to Pro (No Ads)",
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
+                subtitle: Text(
+                  isPro
+                      ? "Lifetime ad-free access enabled"
+                      : "Remove all advertisements forever • ${PurchaseNotifier.instance.formattedPrice}",
+                ),
+                trailing: isPro
+                    ? const Icon(Icons.check_circle, color: Colors.green)
+                    : const Icon(Icons.arrow_forward_ios, size: 16),
+                onTap: () => showProUpgradeDialog(context),
+              );
+            },
           ),
           const Divider(
             thickness: 2.0,

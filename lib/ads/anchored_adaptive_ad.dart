@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import '../state/purchase_notifier.dart';
 
 class AnchoredAdaptiveAd extends StatefulWidget {
   const AnchoredAdaptiveAd({Key? key}) : super(key: key);
@@ -32,6 +33,17 @@ class _AnchoredAdaptiveAdState extends State<AnchoredAdaptiveAd> {
 
   /// Load another ad, disposing of the current ad if there is one.
   Future<void> _loadAd() async {
+    if (PurchaseNotifier.instance.isPro) {
+      await _anchoredAdaptiveAd?.dispose();
+      if (mounted) {
+        setState(() {
+          _anchoredAdaptiveAd = null;
+          _isLoaded = false;
+        });
+      }
+      return;
+    }
+
     await _anchoredAdaptiveAd?.dispose();
     setState(() {
       _anchoredAdaptiveAd = null;
@@ -87,7 +99,7 @@ class _AnchoredAdaptiveAdState extends State<AnchoredAdaptiveAd> {
             _anchoredAdaptiveAd != null &&
             _isLoaded) {
           return Container(
-            color: Colors.green,
+            color: Colors.transparent,
             width: _anchoredAdaptiveAd!.size.width.toDouble(),
             height: _anchoredAdaptiveAd!.size.height.toDouble(),
             child: AdWidget(ad: _anchoredAdaptiveAd!),
@@ -105,6 +117,14 @@ class _AnchoredAdaptiveAdState extends State<AnchoredAdaptiveAd> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(height: adHeight + 4, child: _getAdWidget());
+    return ListenableBuilder(
+      listenable: PurchaseNotifier.instance,
+      builder: (context, _) {
+        if (PurchaseNotifier.instance.isPro) {
+          return const SizedBox.shrink();
+        }
+        return SizedBox(height: adHeight + 4, child: _getAdWidget());
+      },
+    );
   }
 }

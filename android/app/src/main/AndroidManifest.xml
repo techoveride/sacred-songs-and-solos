@@ -1,6 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.hymnestry.hymn_book">
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="com.android.vending.BILLING" />
    <application
         android:label="Sacred Songs &amp; Solos(+Tunes)"
         android:name="${applicationName}"
