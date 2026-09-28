@@ -4,7 +4,7 @@
       "android": {
         "default": {
           "projectId": "hymn-book-690dd",
-          "appId": "1:230343352269:android:5fa826619b60063576ee84",
+          "appId": "1:230343352269:android:c9637d792cf8e43a76ee84",
           "fileOutput": "android/app/google-services.json"
         }
       },
@@ -12,7 +12,7 @@
         "lib/firebase_options.dart": {
           "projectId": "hymn-book-690dd",
           "configurations": {
-            "android": "1:230343352269:android:5fa826619b60063576ee84"
+            "android": "1:230343352269:android:c9637d792cf8e43a76ee84"
           }
         }
       }
