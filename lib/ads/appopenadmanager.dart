@@ -1,10 +1,12 @@
-import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import '../state/purchase_notifier.dart';
+import 'ad_helper.dart';
 
 class AppOpenAdManager {
+  static final AppOpenAdManager instance = AppOpenAdManager._internal();
+  factory AppOpenAdManager() => instance;
+  AppOpenAdManager._internal();
+
   AppOpenAd? _appOpenAd;
   bool _isShowingAd = false;
   static bool isLoaded = false;
@@ -17,26 +19,29 @@ class AppOpenAdManager {
 
   /// Load an AppOpenAd.
   void loadAd() {
-    final isMobile = !kIsWeb && (Platform.isAndroid || Platform.isIOS);
-    if (!isMobile || PurchaseNotifier.instance.isPro) {
+    if (!AdHelper.shouldShowAds) {
       return;
     }
+
     AppOpenAd.load(
-      adUnitId: "ca-app-pub-2165165254805026/6522356999",
-      // adUnitId: "ca-app-pub-3940256099942544/3419835294",
+      adUnitId: AdHelper.appOpenAdUnitId,
       orientation: AppOpenAd.orientationPortrait,
       request: const AdRequest(),
       adLoadCallback: AppOpenAdLoadCallback(
         onAdLoaded: (ad) {
           if (kDebugMode) {
-            print("Ad Loaded.................................");
+            print("AppOpenAd loaded successfully");
           }
           _appOpenAd = ad;
           isLoaded = true;
           _appOpenLoadTime = DateTime.now();
         },
         onAdFailedToLoad: (error) {
-          // Handle the error.
+          if (kDebugMode) {
+            print("AppOpenAd failed to load: $error");
+          }
+          _appOpenAd = null;
+          isLoaded = false;
         },
       ),
     );
@@ -48,34 +53,34 @@ class AppOpenAdManager {
   }
 
   void showAdIfAvailable() {
-    final isMobile = !kIsWeb && (Platform.isAndroid || Platform.isIOS);
-    if (!isMobile || PurchaseNotifier.instance.isPro) {
+    if (!AdHelper.shouldShowAds) {
       return;
     }
-    if (kDebugMode) {
-      print(
-          "Called=====================================================================");
-    }
+
     if (_appOpenAd == null) {
       if (kDebugMode) {
-        print('Tried to show ad before available.');
+        print('Tried to show AppOpenAd before available. Loading...');
       }
       loadAd();
       return;
     }
+
     if (_isShowingAd) {
       if (kDebugMode) {
-        print('Tried to show ad while already showing an ad.');
+        print('Tried to show AppOpenAd while already showing an ad.');
       }
       return;
     }
-    if (DateTime.now().subtract(maxCacheDuration).isAfter(_appOpenLoadTime!)) {
-      debugPrint('Maximum cache duration exceeded. Loading another ad.');
+
+    if (_appOpenLoadTime != null &&
+        DateTime.now().subtract(maxCacheDuration).isAfter(_appOpenLoadTime!)) {
+      debugPrint('Maximum cache duration exceeded for AppOpenAd. Loading another ad.');
       _appOpenAd!.dispose();
       _appOpenAd = null;
       loadAd();
       return;
     }
+
     // Set the fullScreenContentCallback and show the ad.
     _appOpenAd!.fullScreenContentCallback = FullScreenContentCallback(
       onAdShowedFullScreenContent: (ad) {
@@ -97,7 +102,6 @@ class AppOpenAdManager {
           print('$ad onAdDismissedFullScreenContent');
         }
         _isShowingAd = false;
-
         ad.dispose();
         _appOpenAd = null;
         loadAd();

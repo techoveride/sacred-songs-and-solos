@@ -10,6 +10,8 @@ import 'package:hymn_book/util/main_details_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
+import 'ads/applifecyclereactor.dart';
+import 'ads/appopenadmanager.dart';
 import 'firebase_options.dart';
 
 import 'model/db_helper.dart';
@@ -33,6 +35,11 @@ void main() async {
           '0D7F74813DAA8CF871287A05BE47FDE7'
         ],
       ));
+
+      // Global App Open Ad lifecycle management
+      AppOpenAdManager.instance.loadAd();
+      AppLifecycleReactor(appOpenAdManager: AppOpenAdManager.instance)
+          .listenToAppStateChanges();
     } catch (e) {
       debugPrint("MobileAds initialization error: $e");
     }

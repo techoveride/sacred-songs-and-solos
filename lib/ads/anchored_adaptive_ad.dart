@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../state/purchase_notifier.dart';
+import 'ad_helper.dart';
 
 class AnchoredAdaptiveAd extends StatefulWidget {
   const AnchoredAdaptiveAd({Key? key}) : super(key: key);
@@ -61,10 +62,7 @@ class _AnchoredAdaptiveAdState extends State<AnchoredAdaptiveAd> {
     }
 
     _anchoredAdaptiveAd = BannerAd(
-      adUnitId: Platform.isAndroid
-          ? 'ca-app-pub-2165165254805026/8683500374'
-          // ? 'ca-app-pub-3940256099942544/6300978111'
-          : 'ca-app-pub-3940256099942544/2934735716',
+      adUnitId: AdHelper.bannerAdUnitId,
       size: size,
       request: const AdRequest(nonPersonalizedAds: true),
       listener: BannerAdListener(
@@ -126,7 +124,7 @@ class _AnchoredAdaptiveAdState extends State<AnchoredAdaptiveAd> {
     return ListenableBuilder(
       listenable: PurchaseNotifier.instance,
       builder: (context, _) {
-        if (PurchaseNotifier.instance.isPro) {
+        if (PurchaseNotifier.instance.isPro || !_isLoaded || _anchoredAdaptiveAd == null) {
           return const SizedBox.shrink();
         }
         return SizedBox(height: adHeight + 4, child: _getAdWidget());

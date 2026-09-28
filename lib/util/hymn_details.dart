@@ -10,8 +10,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
-import '../ads/applifecyclereactor.dart';
-import '../ads/appopenadmanager.dart';
+import '../ads/anchored_adaptive_ad.dart';
 import '../state/hymns_notifier.dart';
 import '../state/reading_settings_notifier.dart';
 
@@ -35,7 +34,7 @@ class HymnDetails extends StatefulWidget {
   HymnDetailsState createState() => HymnDetailsState();
 }
 
-class HymnDetailsState extends State<HymnDetails> with WidgetsBindingObserver {
+class HymnDetailsState extends State<HymnDetails> {
   final DatabaseHelper _dbHelper = DatabaseHelper();
   IconData favIcon = Icons.favorite_border;
   final IconData _off = Icons.favorite_border;
@@ -45,9 +44,6 @@ class HymnDetailsState extends State<HymnDetails> with WidgetsBindingObserver {
   bool tuneIconVisibility = true;
   double? barHeight;
   late ScrollController _scrollController;
-
-  AppOpenAdManager appOpenAdManager = AppOpenAdManager();
-  late AppLifecycleReactor _appLifecycleReactor;
 
   @override
   void initState() {
@@ -59,11 +55,6 @@ class HymnDetailsState extends State<HymnDetails> with WidgetsBindingObserver {
     _initFavoriteState();
     _loadTune();
     _applyWakeLock();
-
-    appOpenAdManager = AppOpenAdManager()..loadAd();
-    _appLifecycleReactor =
-        AppLifecycleReactor(appOpenAdManager: appOpenAdManager);
-    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
@@ -411,6 +402,7 @@ class HymnDetailsState extends State<HymnDetails> with WidgetsBindingObserver {
                 ),
               ],
             ),
+            bottomNavigationBar: const AnchoredAdaptiveAd(),
           );
         }
 
@@ -456,6 +448,7 @@ class HymnDetailsState extends State<HymnDetails> with WidgetsBindingObserver {
             onPressed: shareIntent,
             child: const Icon(Icons.share),
           ),
+          bottomNavigationBar: const AnchoredAdaptiveAd(),
         );
       },
     );
