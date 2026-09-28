@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hymn Book Studio — Admin & Catalog Manager</title>
+  <meta name="description" content="Secure catalog editor and update manager for the Hymn Book mobile application.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;1,400&family=Cinzel:wght@600;700&display=swap" rel="stylesheet">
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="theme-dark">
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+  <!-- ==================================================================== -->
+  <!-- AUTHENTICATION GATEWAY / LOGIN SCREEN -->
+  <!-- ==================================================================== -->
+  <div id="authScreen" class="auth-screen">
+    <div class="auth-card">
+      <div class="auth-brand">
+        <div class="auth-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+        </div>
+        <h2 class="auth-title">Hymn Book <span>Studio</span></h2>
+        <p class="auth-subtitle">Restricted Access • Administrator Authentication</p>
+      </div>
+
+      <!-- Alert / Error Banner -->
+      <div id="authAlert" class="auth-alert hidden"></div>
+
+      <!-- Authentication Form: Google OAuth + Firebase Email & Password -->
+      <form id="emailLoginForm" class="auth-form" onsubmit="return false;">
+        <!-- Google Sign-In Button -->
+        <button type="button" id="btnGoogleSignIn" class="btn btn-google btn-block" title="Sign in with your Google account">
+          <svg width="18" height="18" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+          </svg>
+          <span>Continue with Google</span>
+        </button>
+
+        <div class="auth-divider">
+          <span>or sign in with email</span>
+        </div>
+
+        <div class="form-group">
+          <label for="loginEmail">Administrator Email</label>
+          <div class="input-with-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            <input type="email" id="loginEmail" placeholder="admin@yourdomain.com" required autocomplete="username">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="loginPassword">Password</label>
+          <div class="input-with-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            <input type="password" id="loginPassword" placeholder="••••••••••••" required autocomplete="current-password">
+            <button type="button" class="btn-toggle-pwd" id="btnTogglePwd" title="Show/Hide Password">👁</button>
+          </div>
+        </div>
+
+        <div class="auth-options">
+          <label class="checkbox-label">
+            <input type="checkbox" id="rememberMe" checked>
+            <span>Stay signed in</span>
+          </label>
+          <a href="#" id="linkCreateAdmin" class="auth-link">Setup Guide</a>
+        </div>
+
+        <button type="submit" id="btnLoginSubmit" class="btn btn-primary btn-block">
+          <span id="loginBtnText">Sign In to Dashboard</span>
+          <span id="loginBtnSpinner" class="spinner hidden"></span>
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        <span>Protected with 256-bit encryption • Firebase Project <code>hymn-book-690dd</code></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================================================================== -->
+  <!-- MAIN DASHBOARD (Visible only when authenticated) -->
+  <!-- ==================================================================== -->
+  <div id="mainDashboard" class="main-dashboard hidden">
+    <!-- Header / Navigation -->
+    <header class="app-header">
+      <div class="header-brand">
+        <div class="brand-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+            <line x1="12" y1="6" x2="12" y2="14"></line>
+            <line x1="9" y1="9" x2="15" y2="9"></line>
+          </svg>
+        </div>
+        <div>
+          <h1 class="brand-title">Hymn Book <span>Studio</span></h1>
+          <p class="brand-subtitle">Remote Catalog & Lyric CMS</p>
+        </div>
+      </div>
+
+      <!-- Quick Stats Bar -->
+      <div class="header-stats">
+        <div class="stat-chip">
+          <span class="stat-label">Manifest Ver:</span>
+          <span id="headerManifestVer" class="stat-value highlight">v2</span>
+        </div>
+        <div class="stat-chip">
+          <span class="stat-label">Total Hymns:</span>
+          <span id="headerTotalHymns" class="stat-value">0</span>
+        </div>
+      </div>
+
+      <!-- Top Action Buttons -->
+      <div class="header-actions">
+        <button id="btnNewHymn" class="btn btn-primary" title="Create a new hymn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          New Hymn
+        </button>
+
+        <button id="btnImportModal" class="btn btn-secondary" title="Import JSON payload or file">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          Import
+        </button>
+
+        <button id="btnExportModal" class="btn btn-accent" title="Generate and download update JSON">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+          Export Manifest
+        </button>
+
+        <button id="btnGuideModal" class="btn btn-ghost" title="Instructions on publishing to Firebase">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+          Publish Guide
+        </button>
+
+        <button id="btnThemeToggle" class="btn-icon" title="Toggle Light/Dark Theme" aria-label="Toggle theme">
+          <svg id="iconMoon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+          <svg id="iconSun" class="hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+        </button>
+
+        <!-- User Profile & Logout -->
+        <div class="user-profile-menu">
+          <div class="user-chip" id="userChip" title="Logged in administrator">
+            <span class="user-avatar" id="userAvatar">A</span>
+            <span class="user-email" id="userEmailDisplay">admin@hymnbook</span>
+          </div>
+          <button id="btnLogout" class="btn btn-danger btn-sm" title="Log out from dashboard">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+            Sign Out
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Workspace Container: 3 Columns -->
+    <main class="workspace-layout">
+      <!-- COLUMN 1: Hymn Catalog Sidebar -->
+      <aside class="sidebar-panel">
+        <div class="sidebar-header">
+          <div class="search-box">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="text" id="catalogSearch" placeholder="Search by #, title, lyrics..." autocomplete="off">
+            <button id="btnClearSearch" class="btn-clear hidden" title="Clear search">&times;</button>
+          </div>
+          <div class="filter-row">
+            <span id="catalogCount" class="catalog-count">0 hymns</span>
+            <select id="catalogSort" class="select-sort">
+              <option value="id-asc">Hymn # (Asc)</option>
+              <option value="id-desc">Hymn # (Desc)</option>
+              <option value="title-asc">Title (A-Z)</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="hymnList" class="hymn-list" role="list">
+          <!-- Rendered dynamically by app.js -->
+        </div>
+      </aside>
+
+      <!-- COLUMN 2: Rich Hymn Editor -->
+      <section class="editor-panel">
+        <div class="editor-header">
+          <div class="editor-meta">
+            <span class="editor-badge" id="editorBadge">Editing Hymn</span>
+            <h2 class="editor-title" id="editorCurrentTitle">Select or create a hymn</h2>
+          </div>
+          <div class="editor-actions">
+            <button id="btnFormatLyric" class="btn btn-secondary btn-sm" title="Clean and standardize stanzas">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="21" y1="10" x2="7" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="21" y1="18" x2="7" y2="18"></line></svg>
+              Auto-Format
+            </button>
+            <button id="btnDuplicateHymn" class="btn btn-secondary btn-sm" title="Duplicate this hymn">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              Clone
+            </button>
+            <button id="btnDeleteHymn" class="btn btn-danger btn-sm" title="Delete this hymn">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+              Delete
+            </button>
+            <button id="btnSaveHymn" class="btn btn-primary btn-sm" title="Save changes (Ctrl+S)">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+              Save Hymn
+            </button>
+          </div>
+        </div>
+
+        <form id="hymnForm" class="editor-form" onsubmit="return false;">
+          <div class="form-grid-3">
+            <div class="form-group">
+              <label for="hymnId">Hymn Number (ID) <span class="required">*</span></label>
+              <input type="number" id="hymnId" placeholder="e.g. 1203" required min="1">
+              <small class="helper-text">Unique number matching hymnal</small>
+            </div>
+
+            <div class="form-group span-2">
+              <label for="hymnTitle">Hymn Title <span class="required">*</span></label>
+              <input type="text" id="hymnTitle" placeholder="e.g. Great Is Thy Faithfulness" required>
+              <small class="helper-text" id="titleCharCount">0 characters</small>
+            </div>
+          </div>
+
+          <div class="form-grid-3">
+            <div class="form-group">
+              <label for="hymnAuthor">Author / Lyricist</label>
+              <input type="text" id="hymnAuthor" placeholder="e.g. Thomas O. Chisholm">
+            </div>
+
+            <div class="form-group">
+              <label for="hymnTune">Tune Audio (MP3 URL or File) <span style="font-weight:normal;font-size:0.8em;opacity:0.8;">— Streams &amp; caches</span></label>
+              <div style="display:flex;gap:6px;">
+                <input type="text" id="hymnTune" placeholder="e.g. https://hymnestry.techoveridehub.com/tunes/1203.mp3 or default.mp3" style="flex:1;">
+                <button type="button" id="btnPreviewTune" class="btn btn-secondary btn-sm" title="Preview audio from URL" style="white-space:nowrap;padding:0 10px;">▶ Test</button>
+              </div>
+              <audio id="adminAudioPreview" style="display:none;"></audio>
+            </div>
+
+            <div class="form-group">
+              <label for="hymnVersion">Catalog Version</label>
+              <input type="number" id="hymnVersion" value="1" min="1">
+            </div>
+          </div>
+
+          <!-- Lyrics Editor with Quick Snippets -->
+          <div class="form-group lyric-editor-group">
+            <div class="lyric-toolbar">
+              <label for="hymnLyric">Hymn Stanzas & Lyrics <span class="required">*</span></label>
+              <div class="snippet-buttons">
+                <button type="button" class="btn-snippet" id="btnInsertVerse">+ Verse</button>
+                <button type="button" class="btn-snippet" id="btnInsertChorus">+ Chorus</button>
+                <span id="stanzasCount" class="stanzas-badge">0 Stanzas detected</span>
+              </div>
+            </div>
+            <textarea id="hymnLyric" rows="18" placeholder="1
+Great is Thy faithfulness, O God my Father,
+There is no shadow of turning with Thee;
+
+Chorus
+Great is Thy faithfulness!
+Great is Thy faithfulness!
+
+2
+Summer and winter, and springtime and harvest..."></textarea>
+            <div class="editor-footer-help">
+              <span>Tip: Number each stanza with <code>1</code>, <code>2</code>, <code>3</code> and use <code>Chorus</code> for the refrain.</span>
+              <span id="wordCount">0 words</span>
+            </div>
+          </div>
+        </form>
+      </section>
+
+      <!-- COLUMN 3: Live Mobile Phone Simulator -->
+      <aside class="preview-panel">
+        <div class="preview-header">
+          <div class="preview-title-box">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+            <h3>Mobile Preview</h3>
+          </div>
+          <div class="preview-controls">
+            <button id="btnFontDecrease" class="btn-icon-sm" title="Decrease font">A-</button>
+            <button id="btnFontIncrease" class="btn-icon-sm" title="Increase font">A+</button>
+            <button id="btnToggleSerif" class="btn-icon-sm" title="Toggle Serif / Sans font">F</button>
+            <button id="btnPreviewTheme" class="btn-icon-sm" title="Toggle Phone Light/Dark">◐</button>
+          </div>
+        </div>
+
+        <!-- Phone Frame -->
+        <div class="phone-wrapper">
+          <div class="phone-mockup" id="phoneMockup">
+            <div class="phone-speaker"></div>
+            
+            <!-- Mock Phone Status Bar -->
+            <div class="phone-status-bar">
+              <span>9:41</span>
+              <div class="status-icons">
+                <span>●●●</span>
+                <span>WiFi</span>
+                <span>100%</span>
+              </div>
+            </div>
+
+            <!-- Mock App Bar -->
+            <div class="mock-app-bar">
+              <div class="mock-back-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+              </div>
+              <div class="mock-title-container">
+                <span class="mock-title" id="previewTitle">Hymn Details</span>
+                <span class="mock-subtitle" id="previewSubtitle">Hymn #0</span>
+              </div>
+              <div class="mock-favorite-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+              </div>
+            </div>
+
+            <!-- Mock Tune Player Floating Bar -->
+            <div class="mock-audio-bar" id="mockAudioBar">
+              <div class="audio-play-icon">▶</div>
+              <div class="audio-info">
+                <span class="audio-label">Tune: <span id="previewTune">default.mp3</span></span>
+                <div class="audio-progress"><div class="audio-fill"></div></div>
+              </div>
+            </div>
+
+            <!-- Mock Lyrics Scroll Body -->
+            <div class="phone-screen-content" id="phoneContent">
+              <div class="preview-hymn-header">
+                <h2 id="previewHymnTitle" class="phone-hymn-title">Title Here</h2>
+                <p id="previewHymnAuthor" class="phone-hymn-author">Author</p>
+              </div>
+              <div id="previewLyricsBody" class="phone-lyrics-body">
+                <!-- Rendered stanza lines -->
+              </div>
+            </div>
+
+            <div class="phone-home-indicator"></div>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <!-- ==================================================================== -->
+  <!-- MODAL: Export JSON Manifest -->
+  <!-- ==================================================================== -->
+  <div id="exportModal" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title">Export Remote Hymns Manifest</h3>
+          <p class="modal-subtitle">Generate production-ready JSON to publish to your web hosting or Firebase</p>
+        </div>
+        <button class="btn-close-modal" id="btnCloseExportModal">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="export-options-grid">
+          <div class="form-group">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <label for="exportManifestVersion">Manifest Version</label>
+              <span class="editor-badge" style="font-size: 0.65rem; color: var(--accent-amber);">Auto +1 Incremented</span>
+            </div>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <input type="number" id="exportManifestVersion" value="2" min="1" style="flex: 1;">
+              <button type="button" class="btn btn-secondary btn-sm" id="btnIncrementVer" title="Bump version by +1">+1</button>
+            </div>
+            <small class="helper-text">Auto-increased on every export so your app always detects the new release.</small>
+          </div>
+
+          <div class="form-group">
+            <label for="exportReleaseNotes">Release Notes / Changelog</label>
+            <input type="text" id="exportReleaseNotes" value="Catalog update with latest hymn additions and corrections">
+          </div>
+        </div>
+
+        <div class="export-stats-row">
+          <span>Hymns included: <strong id="exportCount">0</strong></span>
+          <span>Output format: <strong>Standard HymnSync Manifest</strong></span>
+        </div>
+
+        <div class="code-preview-box">
+          <div class="code-preview-header">
+            <span>hymn_updates.json</span>
+            <button id="btnCopyJson" class="btn btn-secondary btn-xs">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              Copy to Clipboard
+            </button>
+          </div>
+          <pre><code id="exportJsonCode">// Generated JSON will appear here</code></pre>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button id="btnDownloadJson" class="btn btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          Download hymn_updates.json
+        </button>
+        <button class="btn btn-ghost" id="btnCancelExport">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================================================================== -->
+  <!-- MODAL: Import JSON -->
+  <!-- ==================================================================== -->
+  <div id="importModal" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title">Import Hymns Catalog</h3>
+          <p class="modal-subtitle">Load from existing <code>sample_hymn_updates.json</code> or paste JSON</p>
+        </div>
+        <button class="btn-close-modal" id="btnCloseImportModal">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="drop-zone" id="dropZone">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+          <p>Drag & drop your <code>.json</code> file here, or <label for="fileInput" class="upload-link">browse file</label></p>
+          <input type="file" id="fileInput" accept=".json" class="hidden">
+        </div>
+
+        <div class="form-group" style="margin-top: 1rem;">
+          <label for="importJsonText">Or paste JSON content directly:</label>
+          <textarea id="importJsonText" rows="8" placeholder="Paste { manifest_version: ..., hymns: [...] } here"></textarea>
+        </div>
+
+        <div class="import-mode-selection">
+          <label class="radio-label">
+            <input type="radio" name="importMode" value="merge" checked>
+            <span><strong>Merge / Update:</strong> Add new hymns and update matching IDs without deleting existing ones</span>
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="importMode" value="replace">
+            <span><strong>Full Replace:</strong> Replace entire catalog with imported data</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button id="btnExecuteImport" class="btn btn-primary">Load Hymns</button>
+        <button class="btn btn-ghost" id="btnCancelImport">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================================================================== -->
+  <!-- MODAL: Step-by-Step Publishing Guide -->
+  <!-- ==================================================================== -->
+  <div id="guideModal" class="modal-overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal-card modal-large">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title">How to Publish Hymn Updates Live</h3>
+          <p class="modal-subtitle">Follow these 3 easy steps to deploy updates to all mobile app users</p>
+        </div>
+        <button class="btn-close-modal" id="btnCloseGuideModal">&times;</button>
+      </div>
+
+      <div class="modal-body guide-content">
+        <div class="guide-steps">
+          <div class="step-card">
+            <div class="step-num">1</div>
+            <div class="step-body">
+              <h4>Upload <code>hymn_updates.json</code> to your Web Hosting</h4>
+              <p>Download the updated JSON from this dashboard and upload it to your website or hosting:</p>
+              <ul>
+                <li><strong>Your Own Web Hosting (Recommended):</strong> Upload <code>hymn_updates.json</code> via cPanel File Manager or FTP to <code>public_html/hymn_updates.json</code>. Your URL will be: <code>https://yourdomain.com/hymn_updates.json</code>.</li>
+                <li><strong>GitHub Gist:</strong> Create a public gist named <code>hymn_updates.json</code> and copy the <em>Raw</em> URL.</li>
+                <li><strong>Firebase Hosting:</strong> Run <code>firebase deploy --only hosting</code>.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="step-card">
+            <div class="step-num">2</div>
+            <div class="step-body">
+              <h4>Update Firebase Remote Config</h4>
+              <p>Go to your <a href="https://console.firebase.google.com/project/hymn-book-690dd/config" target="_blank" rel="noopener">Firebase Remote Config Console</a> and set:</p>
+              <table class="guide-table">
+                <thead>
+                  <tr>
+                    <th>Parameter Key</th>
+                    <th>Value to Set</th>
+                    <th>Purpose</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>hymn_catalog_version</code></td>
+                    <td><strong class="text-amber" id="guideVersionTarget">2</strong> (Increment by 1)</td>
+                    <td>Notifies app that a new catalog version is available</td>
+                  </tr>
+                  <tr>
+                    <td><code>hymn_updates_url</code></td>
+                    <td><code>https://yourdomain.com/hymn_updates.json</code></td>
+                    <td>The direct URL where app downloads the JSON</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="guide-callout">
+                <strong>Important:</strong> Click <strong>Publish changes</strong> at the top right of the Firebase Remote Config screen!
+              </div>
+            </div>
+          </div>
+
+          <div class="step-card">
+            <div class="step-num">3</div>
+            <div class="step-body">
+              <h4>App Users Receive Updates Automatically!</h4>
+              <p>When users launch the app or tap <strong>"Check for Hymn Updates"</strong> in the drawer menu, the new hymns are fetched and stored in SQLite. All user favorites and custom songs remain safe!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="btnCloseGuide">Got It!</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

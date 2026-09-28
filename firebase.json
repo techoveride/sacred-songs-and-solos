@@ -1,0 +1,29 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "hymn-book-690dd",
+          "appId": "1:230343352269:android:5fa826619b60063576ee84",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "hymn-book-690dd",
+          "configurations": {
+            "android": "1:230343352269:android:5fa826619b60063576ee84"
+          }
+        }
+      }
+    }
+  },
+  "hosting": {
+    "public": "admin",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  }
+}

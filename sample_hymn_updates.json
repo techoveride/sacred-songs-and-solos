@@ -1,0 +1,14 @@
+{
+  "manifest_version": 2,
+  "notes": "Added Hymn #1203 - Great Is Thy Faithfulness",
+  "hymns": [
+    {
+      "id": 1203,
+      "title": "Great Is Thy Faithfulness",
+      "author": "Thomas O. Chisholm",
+      "lyric": "1\nGreat is Thy faithfulness, O God my Father,\nThere is no shadow of turning with Thee;\nThou changest not, Thy compassions, they fail not;\nAs Thou hast been Thou forever wilt be.\n\nChorus\nGreat is Thy faithfulness!\nGreat is Thy faithfulness!\nMorning by morning new mercies I see;\nAll I have needed Thy hand hath provided—\nGreat is Thy faithfulness, Lord, unto me!\n\n2\nSummer and winter, and springtime and harvest,\nSun, moon and stars in their courses above,\nJoin with all nature in manifold witness\nTo Thy great faithfulness, mercy and love.\n\n3\nPardon for sin and a peace that endureth,\nThine own dear presence to cheer and to guide;\nStrength for today and bright hope for tomorrow,\nBlessings all mine, with ten thousand beside!",
+      "tune": "default.mp3",
+      "version": 1
+    }
+  ]
+}

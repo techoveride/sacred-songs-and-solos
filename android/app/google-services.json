@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "230343352269",
+    "project_id": "hymn-book-690dd",
+    "storage_bucket": "hymn-book-690dd.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:230343352269:android:5fa826619b60063576ee84",
+        "android_client_info": {
+          "package_name": "com.hymnestry.hymn_book"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCHxmWSFUbVnWG5YjSpAI0MeLDdgePFWKU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
