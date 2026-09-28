@@ -54,7 +54,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyCHxmWSFUbVnWG5YjSpAI0MeLDdgePFWKU',
-    appId: '1:230343352269:android:5fa826619b60063576ee84',
+    appId: '1:230343352269:android:c9637d792cf8e43a76ee84',
     messagingSenderId: '230343352269',
     projectId: 'hymn-book-690dd',
     storageBucket: 'hymn-book-690dd.firebasestorage.app',
