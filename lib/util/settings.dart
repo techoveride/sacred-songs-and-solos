@@ -779,9 +779,9 @@ class _SettingsState extends State<Settings> {
                   : Icons.screen_lock_portrait_outlined,
               color: _wakeLock ? Theme.of(context).primaryColor : null,
             ),
-            trailing: Switch(
+            trailing: Switch.adaptive(
               value: _wakeLock,
-              activeColor: Theme.of(context).primaryColor,
+              activeTrackColor: Theme.of(context).primaryColor,
               onChanged: (val) async {
                 final sm = ScaffoldMessenger.of(context);
                 setState(() => _wakeLock = val);

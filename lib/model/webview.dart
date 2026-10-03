@@ -39,7 +39,7 @@ class _PaymentWebViewState extends State<PaymentWebView> {
         ),
         Container(
           color: Colors.white,
-          child: const Center(child: CircularProgressIndicator()),
+          child: const Center(child: CircularProgressIndicator.adaptive()),
         ),
       ]),
     );

@@ -143,7 +143,7 @@ class FavHymnListingState extends State<FavHymnListing> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return const Center(child: CircularProgressIndicator.adaptive());
     }
 
     if (_favHymnList.isEmpty) {

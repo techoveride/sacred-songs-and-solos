@@ -200,7 +200,7 @@ class _ReportBugState extends State<ReportBug> {
                     ? const SizedBox(
                         width: 18,
                         height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                        child: CircularProgressIndicator.adaptive(strokeWidth: 2),
                       )
                     : const Icon(Icons.send_rounded),
                 label: Text(

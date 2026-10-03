@@ -19,7 +19,7 @@ class AdHelper {
   static const String _testAndroidBannerId = 'ca-app-pub-3940256099942544/6300978111';
   static const String _testIosBannerId = 'ca-app-pub-3940256099942544/2934735716';
 
-  static const String _testAndroidAppOpenId = 'ca-app-pub-3940256099942544/9257390515';
+  static const String _testAndroidAppOpenId = 'ca-app-pub-3940256099942544/9257395921';
   static const String _testIosAppOpenId = 'ca-app-pub-3940256099942544/5575463023';
 
   /// Whether current platform supports Google Mobile Ads (Android & iOS only)

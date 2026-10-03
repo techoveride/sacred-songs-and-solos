@@ -7,35 +7,6 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:230343352269:android:5fa826619b60063576ee84",
-        "android_client_info": {
-          "package_name": "com.hymnestry.hymn_book"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "230343352269-8rggkd17pm4o21qbnas1qcs0d4h9m6mt.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyCHxmWSFUbVnWG5YjSpAI0MeLDdgePFWKU"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "230343352269-8rggkd17pm4o21qbnas1qcs0d4h9m6mt.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
         "mobilesdk_app_id": "1:230343352269:android:c9637d792cf8e43a76ee84",
         "android_client_info": {
           "package_name": "com.hymnestry.sacred_songs_and_solos"
@@ -58,6 +29,13 @@
             {
               "client_id": "230343352269-8rggkd17pm4o21qbnas1qcs0d4h9m6mt.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "230343352269-ea30q9evuqjcp8rf7284i7p6t25k1oje.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.hymnestry.sacredSongsAndSolos"
+              }
             }
           ]
         }

@@ -242,6 +242,9 @@ class _MasterDetailsScreenState extends State<MasterDetailsScreen>
             child: FavHymnListing(
               key: favHymnGKey,
               hymnSelectedCallback: (hymn) {
+                if (_favSelectedHymn.id != hymn.id) {
+                  globals.stopAudio();
+                }
                 setState(() {
                   _favSelectedHymn = hymn;
                 });
@@ -295,6 +298,9 @@ class _MasterDetailsScreenState extends State<MasterDetailsScreen>
             child: HymnListing(
               key: hymnGKey,
               hymnSelectedCallback: (hymn) {
+                if (_selectedHymn.id != hymn.id) {
+                  globals.stopAudio();
+                }
                 setState(() {
                   _selectedHymn = hymn;
                 });
@@ -361,9 +367,11 @@ class _MasterDetailsScreenState extends State<MasterDetailsScreen>
             });
             return;
           }
-          final shouldExit = await showExitConfirmationDialog(context);
-          if (shouldExit) {
-            await SystemNavigator.pop();
+          if (!Platform.isIOS) {
+            final shouldExit = await showExitConfirmationDialog(context);
+            if (shouldExit) {
+              await SystemNavigator.pop();
+            }
           }
         },
         child: Scaffold(

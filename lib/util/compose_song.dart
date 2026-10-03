@@ -205,7 +205,7 @@ class _ComposeSongState extends State<ComposeSong> {
                       ? const SizedBox(
                           width: 20,
                           height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                          child: CircularProgressIndicator.adaptive(strokeWidth: 2),
                         )
                       : const Icon(Icons.save),
                   label: Text(

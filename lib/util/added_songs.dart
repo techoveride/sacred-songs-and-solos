@@ -4,6 +4,7 @@ import 'package:hymn_book/model/hymn.dart';
 import 'package:hymn_book/util/compose_song.dart';
 import 'package:hymn_book/util/hymn_details.dart';
 import 'package:hymn_book/util/hymn_listing.dart';
+import '../model/globals.dart' as globals;
 import '../state/hymns_notifier.dart';
 import 'app_dialog.dart';
 
@@ -44,42 +45,26 @@ class _AddedSongState extends State<AddedSong> {
     }
   }
 
-  void _confirmDelete(Hymns hymn) {
-    showAppDialog(
+  void _confirmDelete(Hymns hymn) async {
+    final confirmed = await showAdaptiveConfirmationDialog(
       context: context,
-      builder: (ctx) => AppDialog(
-        icon: Icons.delete_outline,
-        iconColor: Colors.redAccent,
-        title: "Delete Composed Song?",
-        subtitle: "Are you sure you want to delete '${hymn.title}'? This action cannot be undone.",
-        content: const SizedBox(height: 8),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text("Cancel"),
-          ),
-          FilledButton.tonal(
-            style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.errorContainer,
-              foregroundColor: Theme.of(context).colorScheme.onErrorContainer,
-            ),
-            onPressed: () async {
-              Navigator.pop(ctx);
-              await _dbHelper.deleteCustomHymn(hymn.id);
-              hymnGKey.currentState?.refreshList();
-              HymnsNotifier.instance.notifyHymnsChanged();
-              await loadComposedSongs();
-              if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("'${hymn.title}' deleted")),
-                );
-              }
-            },
-            child: const Text("Delete"),
-          ),
-        ],
-      ),
+      title: "Delete Composed Song?",
+      content: "Are you sure you want to delete '${hymn.title}'? This action cannot be undone.",
+      confirmText: "Delete",
+      cancelText: "Cancel",
+      isDestructive: true,
     );
+    if (confirmed == true) {
+      await _dbHelper.deleteCustomHymn(hymn.id);
+      hymnGKey.currentState?.refreshList();
+      HymnsNotifier.instance.notifyHymnsChanged();
+      await loadComposedSongs();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("'${hymn.title}' deleted")),
+        );
+      }
+    }
   }
 
   @override
@@ -99,7 +84,7 @@ class _AddedSongState extends State<AddedSong> {
         ],
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator.adaptive())
           : _composedSongs.isEmpty
               ? _buildEmptyView()
               : isTablet
@@ -258,6 +243,9 @@ class _AddedSongState extends State<AddedSong> {
                         : null,
                     selected: isSelected,
                     onTap: () {
+                      if (_selectedSong?.id != hymn.id) {
+                        globals.stopAudio();
+                      }
                       setState(() => _selectedSong = hymn);
                     },
                   ),

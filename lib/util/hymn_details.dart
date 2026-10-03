@@ -34,7 +34,7 @@ class HymnDetails extends StatefulWidget {
   HymnDetailsState createState() => HymnDetailsState();
 }
 
-class HymnDetailsState extends State<HymnDetails> {
+class HymnDetailsState extends State<HymnDetails> with WidgetsBindingObserver {
   final DatabaseHelper _dbHelper = DatabaseHelper();
   IconData favIcon = Icons.favorite_border;
   final IconData _off = Icons.favorite_border;
@@ -55,14 +55,33 @@ class HymnDetailsState extends State<HymnDetails> {
     _initFavoriteState();
     _loadTune();
     _applyWakeLock();
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void didUpdateWidget(covariant HymnDetails oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.hymns.id != widget.hymns.id) {
+      _stopAndResetPlayer();
       _initFavoriteState();
       _loadTune();
+      if (_scrollController.hasClients) {
+        _scrollController.jumpTo(0.0);
+      }
+    }
+  }
+
+  void _stopAndResetPlayer() {
+    try {
+      globals.player.stop();
+    } catch (e) {
+      debugPrint("Error stopping player on hymn switch: $e");
+    }
+    globals.mp3Uri = '';
+    globals.tuneIcon = globals.play;
+    globals.playerState = PlayerState.stopped;
+    if (mounted) {
+      setState(() {});
     }
   }
 
@@ -164,7 +183,6 @@ class HymnDetailsState extends State<HymnDetails> {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
-    _appLifecycleReactor.listenToAppStateChanges();
     if (state == AppLifecycleState.resumed) {
       _applyWakeLock();
     }
@@ -186,6 +204,11 @@ class HymnDetailsState extends State<HymnDetails> {
     _audioPlayerStateSubs?.cancel();
     _scrollController.dispose();
     WidgetsBinding.instance.removeObserver(this);
+    try {
+      globals.player.stop();
+      globals.tuneIcon = globals.play;
+      globals.playerState = PlayerState.stopped;
+    } catch (_) {}
     super.dispose();
   }
 

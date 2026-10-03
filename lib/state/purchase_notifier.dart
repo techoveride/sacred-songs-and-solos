@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,7 +15,13 @@ class PurchaseNotifier extends ChangeNotifier {
   static const Set<String> _productIds = {proProductId};
   static const String _prefKeyIsPro = 'is_pro_user';
 
-  final InAppPurchase _iap = InAppPurchase.instance;
+  /// Whether the current OS platform supports In-App Purchases (Android, iOS, macOS)
+  bool get isPlatformSupported =>
+      !kIsWeb && (Platform.isAndroid || Platform.isIOS || Platform.isMacOS);
+
+  InAppPurchase? _iapInstance;
+  InAppPurchase get _iap => _iapInstance ??= InAppPurchase.instance;
+
   StreamSubscription<List<PurchaseDetails>>? _subscription;
 
   bool _isPro = false;
@@ -37,6 +44,12 @@ class PurchaseNotifier extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     _isPro = prefs.getBool(_prefKeyIsPro) ?? false;
     notifyListeners();
+
+    // In-app purchase platform channels are only available on mobile/macOS
+    if (!isPlatformSupported) {
+      _isStoreAvailable = false;
+      return;
+    }
 
     // Listen to background purchase updates from Play Store / App Store
     _subscription = _iap.purchaseStream.listen(
@@ -75,8 +88,10 @@ class PurchaseNotifier extends ChangeNotifier {
 
   /// Initiates non-consumable purchase of the Pro tier.
   Future<bool> buyPro() async {
-    if (!_isStoreAvailable || _proProduct == null) {
-      _errorMessage = "Store is currently unavailable. Please check your internet or Play Store login.";
+    if (!isPlatformSupported || !_isStoreAvailable || _proProduct == null) {
+      _errorMessage = isPlatformSupported
+          ? "Store is currently unavailable. Please check your internet connection or ${Platform.isIOS ? 'App Store' : 'Play Store'} login."
+          : "In-app purchases are not supported on this platform.";
       notifyListeners();
       return false;
     }

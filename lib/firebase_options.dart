@@ -59,7 +59,6 @@ class DefaultFirebaseOptions {
     projectId: 'hymn-book-690dd',
     storageBucket: 'hymn-book-690dd.firebasestorage.app',
   );
-
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyBNMau-L7lMtuhrU_AwIwbgA8ZNeMsRxwo',
     appId: '1:230343352269:ios:6921c8c17171d4a076ee84',

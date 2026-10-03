@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -46,6 +47,8 @@ String PREMIUM_APP_STORE_URL =
     'https://phobos.apple.com/WebObjects/MZStore.woa/wa/viewSoftwareUpdate?id=com.hymnestry.sacredSongsAndSolosPro&mt=8';
 String PREMIUM_PLAY_STORE_URL =
     'https://play.google.com/store/apps/details?id=com.hymnestry.sacred_songs_and_solos';
+String PRIVACY_POLICY_URL = 'https://hymnestry.techoveride.com/privacy-policy/';
+String TERMS_OF_USE_URL = 'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/';
 
 late List<Hymns> defaultHymn;
 const fileName = "HymnLyricsEnglish_v1.json";
@@ -94,6 +97,13 @@ ThemeData _buildAppTheme({
       backgroundColor: primarySwatch,
       foregroundColor: Colors.white,
       elevation: 2,
+    ),
+    pageTransitionsTheme: const PageTransitionsTheme(
+      builders: {
+        TargetPlatform.android: ZoomPageTransitionsBuilder(),
+        TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+        TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+      },
     ),
   );
 }
@@ -172,6 +182,13 @@ ThemeData getActiveTheme({String? key, bool? isDark}) {
         onPrimaryContainer: Colors.white70,
       ),
       tabBarTheme: TabBarThemeData(indicatorColor: accent),
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: {
+          TargetPlatform.android: ZoomPageTransitionsBuilder(),
+          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+          TargetPlatform.macOS: CupertinoPageTransitionsBuilder(),
+        },
+      ),
     );
   }
 
@@ -233,6 +250,18 @@ PlayerState playerState = PlayerState.stopped;
 
 bool get isPlaying => playerState == PlayerState.playing;
 bool get isPaused => playerState == PlayerState.paused;
+
+/// Stops audio playback and resets the player state and tune icons.
+Future<void> stopAudio() async {
+  try {
+    await player.stop();
+  } catch (e) {
+    debugPrint("Error stopping audio: $e");
+  }
+  mp3Uri = '';
+  tuneIcon = play;
+  playerState = PlayerState.stopped;
+}
 
 String mp3Uri = "";
 bool fileExists = false;

@@ -36,7 +36,7 @@ void main() async {
         ],
       ));
 
-      // Global App Open Ad lifecycle management
+      // Global App Open Ad lifecycle management (preloaded for app resume)
       AppOpenAdManager.instance.loadAd();
       AppLifecycleReactor(appOpenAdManager: AppOpenAdManager.instance)
           .listenToAppStateChanges();
@@ -45,13 +45,17 @@ void main() async {
     }
   }
 
-  // Safe Firebase initialization
-  try {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-  } catch (e) {
-    debugPrint("Firebase not initialized for platform: $e");
+  // Safe Firebase initialization (currently configured for Android, iOS, macOS, and Web)
+  final isFirebaseConfigured =
+      kIsWeb || (Platform.isAndroid || Platform.isIOS || Platform.isMacOS);
+  if (isFirebaseConfigured) {
+    try {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+    } catch (e) {
+      debugPrint("Firebase not initialized: $e");
+    }
   }
 
   // Initialize SQLite database and load hymns

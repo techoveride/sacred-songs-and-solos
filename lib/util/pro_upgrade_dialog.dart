@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../model/globals.dart' as globals;
 import '../state/purchase_notifier.dart';
 import 'app_dialog.dart';
 
@@ -125,7 +127,44 @@ class ProUpgradeDialogContent extends StatelessWidget {
                   ),
                 ),
               ],
-              const SizedBox(height: 8),
+              const SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  InkWell(
+                    onTap: () => launchUrl(
+                      Uri.parse(globals.PRIVACY_POLICY_URL),
+                      mode: LaunchMode.externalApplication,
+                    ),
+                    child: Text(
+                      "Privacy Policy",
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        fontSize: 11,
+                        decoration: TextDecoration.underline,
+                        color: theme.textTheme.bodySmall?.color?.withValues(alpha: 0.7),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text("•", style: theme.textTheme.bodySmall?.copyWith(fontSize: 11)),
+                  const SizedBox(width: 8),
+                  InkWell(
+                    onTap: () => launchUrl(
+                      Uri.parse(globals.TERMS_OF_USE_URL),
+                      mode: LaunchMode.externalApplication,
+                    ),
+                    child: Text(
+                      "Terms of Use (EULA)",
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        fontSize: 11,
+                        decoration: TextDecoration.underline,
+                        color: theme.textTheme.bodySmall?.color?.withValues(alpha: 0.7),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
             ],
           ),
           actions: [
@@ -151,7 +190,7 @@ class ProUpgradeDialogContent extends StatelessWidget {
                   ? const SizedBox(
                       width: 16,
                       height: 16,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                      child: CircularProgressIndicator.adaptive(strokeWidth: 2),
                     )
                   : const Icon(Icons.shopping_bag_outlined, size: 18),
               label: Text(

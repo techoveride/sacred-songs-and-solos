@@ -173,7 +173,7 @@ class _MyDrawerState extends State<MyDrawer> {
           ),
           ListTile(
             leading: const Icon(Icons.dark_mode),
-            trailing: Switch(
+            trailing: Switch.adaptive(
               value: globals.nightMode,
               onChanged: (val) async {
                 await globals.setNightMode(val);
@@ -271,19 +271,20 @@ class _MyDrawerState extends State<MyDrawer> {
               }));
             },
           ),
-          ListTile(
-            leading: const Icon(Icons.exit_to_app),
-            title: const Text(
-              "Exit",
+          if (!Platform.isIOS)
+            ListTile(
+              leading: const Icon(Icons.exit_to_app),
+              title: const Text(
+                "Exit",
+              ),
+              onTap: () async {
+                Navigator.of(context).pop();
+                final shouldExit = await showExitConfirmationDialog(context);
+                if (shouldExit) {
+                  await SystemNavigator.pop();
+                }
+              },
             ),
-            onTap: () async {
-              Navigator.of(context).pop();
-              final shouldExit = await showExitConfirmationDialog(context);
-              if (shouldExit) {
-                await SystemNavigator.pop();
-              }
-            },
-          ),
         ],
       ),
     );

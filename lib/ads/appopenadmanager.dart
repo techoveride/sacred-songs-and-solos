@@ -18,7 +18,7 @@ class AppOpenAdManager {
   DateTime? _appOpenLoadTime;
 
   /// Load an AppOpenAd.
-  void loadAd() {
+  void loadAd({bool showWhenLoaded = false}) {
     if (!AdHelper.shouldShowAds) {
       return;
     }
@@ -35,6 +35,9 @@ class AppOpenAdManager {
           _appOpenAd = ad;
           isLoaded = true;
           _appOpenLoadTime = DateTime.now();
+          if (showWhenLoaded) {
+            showAdIfAvailable();
+          }
         },
         onAdFailedToLoad: (error) {
           if (kDebugMode) {

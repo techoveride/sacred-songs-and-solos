@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 /// Displays a uniform Material 3 dialog with smooth cubic scale-and-fade animation.
@@ -30,8 +33,72 @@ Future<T?> showAppDialog<T>({
   );
 }
 
+/// Displays a platform-adaptive confirmation dialog (CupertinoAlertDialog on iOS/macOS, AlertDialog on others).
+Future<bool?> showAdaptiveConfirmationDialog({
+  required BuildContext context,
+  required String title,
+  required String content,
+  String confirmText = "Confirm",
+  String cancelText = "Cancel",
+  bool isDestructive = false,
+}) {
+  final isApple = !kIsWeb && (Platform.isIOS || Platform.isMacOS);
+  if (isApple) {
+    return showCupertinoDialog<bool>(
+      context: context,
+      builder: (ctx) => CupertinoAlertDialog(
+        title: Text(title),
+        content: Padding(
+          padding: const EdgeInsets.only(top: 8.0),
+          child: Text(content),
+        ),
+        actions: [
+          CupertinoDialogAction(
+            child: Text(cancelText),
+            onPressed: () => Navigator.of(ctx).pop(false),
+          ),
+          CupertinoDialogAction(
+            isDestructiveAction: isDestructive,
+            isDefaultAction: !isDestructive,
+            child: Text(confirmText),
+            onPressed: () => Navigator.of(ctx).pop(true),
+          ),
+        ],
+      ),
+    );
+  }
+
+  return showDialog<bool>(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      title: Text(title),
+      content: Text(content),
+      actions: [
+        TextButton(
+          child: Text(cancelText),
+          onPressed: () => Navigator.of(ctx).pop(false),
+        ),
+        FilledButton(
+          style: isDestructive
+              ? FilledButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.error,
+                  foregroundColor: Theme.of(context).colorScheme.onError,
+                )
+              : null,
+          child: Text(confirmText),
+          onPressed: () => Navigator.of(ctx).pop(true),
+        ),
+      ],
+    ),
+  );
+}
+
 /// Displays an exit confirmation dialog. Returns true if user chose to exit, false otherwise.
+/// Never triggers on iOS per Apple App Store Guideline 2.5.8.
 Future<bool> showExitConfirmationDialog(BuildContext context) async {
+  if (!kIsWeb && Platform.isIOS) {
+    return false;
+  }
   final shouldExit = await showAppDialog<bool>(
     context: context,
     builder: (dialogCtx) => AppDialog(
